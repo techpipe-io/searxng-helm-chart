@@ -133,7 +133,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          CR_VERSION="v1.7.0"
+          CR_VERSION="v1.8.1"
           ARCH="linux_amd64"
 
           curl -sSLo /tmp/cr.tar.gz \
