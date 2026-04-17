@@ -25,10 +25,10 @@ entries:
         url: https://techpipe.io/keys/helm-signing-public.asc
     apiVersion: v2
     appVersion: latest
-    created: "2026-04-17T23:13:39.886208997Z"
+    created: "2026-04-17T23:41:49.995589601Z"
     description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway
       API HTTPRoute support
-    digest: 8489a18931c853506478e772415736f3f84ed1f839e1d9c53009b5b85249509b
+    digest: dfa69801d7c70133e2ce473c4c4c6c20b7022de68ba4740ec3268cfa3d79e5d9
     home: https://docs.searxng.org/
     keywords:
     - searxng
@@ -43,7 +43,7 @@ entries:
     - https://docs.searxng.org/
     type: application
     urls:
-    - searxng-0.1.4.tgz
+    - https://techpipe-io.github.io/searxng-helm-chart/searxng-0.1.4.tgz
     version: 0.1.4
   - annotations:
       artifacthub.io/alternativeName: searxng
@@ -168,4 +168,4 @@ entries:
     urls:
     - https://github.com/techpipe-io/searxng-helm-chart/releases/download/searxng-0.1.1/searxng-0.1.1.tgz
     version: 0.1.1
-generated: "2026-04-17T23:13:39.886225999Z"
+generated: "2026-04-17T23:41:49.994550228Z"
