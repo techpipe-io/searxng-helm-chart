@@ -52,14 +52,14 @@ jobs:
       - name: Helm render gateway api
         run: helm template smoke charts/searxng --set gateway.enabled=true --set gateway.parentRefs[0].name=public --set gateway.hostnames[0]=searxng.local > /tmp/render-gateway.yaml
 
-      # - name: Create kind cluster
-      #   uses: helm/kind-action@v1.14.0
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.14.0
 
-      # - name: Helm install smoke test
-      #   run: helm upgrade --install searxng charts/searxng --namespace searxng --create-namespace --wait --timeout 10m
+      - name: Helm install smoke test
+        run: helm upgrade --install searxng charts/searxng --namespace searxng --create-namespace --wait --timeout 10m
 
-      # - name: Helm test
-      #   run: helm test searxng --namespace searxng
+      - name: Helm test
+        run: helm test searxng --namespace searxng
 
       - name: Configure Git
         run: |
