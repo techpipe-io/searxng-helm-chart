@@ -125,6 +125,15 @@ jobs:
           helm verify .cr-release-packages/searxng-*.tgz
 
       - name: Publish chart repo
+        uses: helm/chart-releaser-action@v1.7.0
+        with:
+          version: v1.8.1
+          skip_packaging: true
+          packages_with_index: true
+        env:
+          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish chart repo
         shell: bash
         env:
           REPO_NAME: ${{ github.event.repository.name }}
