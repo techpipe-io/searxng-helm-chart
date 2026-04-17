@@ -127,25 +127,28 @@ jobs:
       - name: Publish chart repo
         shell: bash
         env:
-          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OWNER: ${{ github.repository_owner }}
-          REPO: ${{ github.event.repository.name }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          REPO_OWNER: ${{ github.repository_owner }}
         run: |
           set -euo pipefail
 
-          CR_VERSION="v1.8.1"
-          ARCH="linux_amd64"
+          git fetch origin gh-pages
+          rm -rf /tmp/gh-pages
+          git worktree add /tmp/gh-pages origin/gh-pages
 
-          curl -sSLo /tmp/cr.tar.gz \
-            "https://github.com/helm/chart-releaser/releases/download/${CR_VERSION}/chart-releaser_${CR_VERSION#v}_${ARCH}.tar.gz"
-          tar -xzf /tmp/cr.tar.gz -C /tmp
-          install /tmp/cr /usr/local/bin/cr
+          cp .cr-release-packages/*.tgz /tmp/gh-pages/
+          cp .cr-release-packages/*.tgz.prov /tmp/gh-pages/
 
-          cr upload \
-            -o "$OWNER" \
-            -r "$REPO" \
-            -c "${GITHUB_SHA}" \
-            --skip-existing \
-            .cr-release-packages/*.tgz \
-            .cr-release-packages/*.tgz.prov
+          cd /tmp/gh-pages
+
+          helm repo index . \
+            --url "https://${REPO_OWNER}.github.io/${REPO_NAME}" \
+            --merge index.yaml
+
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+          git add index.yaml ./*.tgz ./*.prov
+          git diff --cached --quiet || git commit -m "Publish chart artifacts for ${GITHUB_REF_NAME}"
+          git push origin HEAD:gh-pages
 
