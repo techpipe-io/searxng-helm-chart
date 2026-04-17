@@ -66,7 +66,53 @@ jobs:
           git config user.name "techpipe-io"
           git config user.email "272725734+techpipe-io@users.noreply.github.com"
 
-      - name: Run chart releaser
-        uses: helm/chart-releaser-action@v1.7.0
+      - name: Import signing key
+        shell: bash
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          HELM_GPG_PRIVATE_KEY_B64: ${{ secrets.HELM_GPG_PRIVATE_KEY_B64 }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo "$HELM_GPG_PRIVATE_KEY_B64" | base64 -d > /tmp/helm-signing-private.asc
+          gpg --batch --import /tmp/helm-signing-private.asc
+
+      - name: Export Helm keyrings
+        shell: bash
+        run: |
+          set -euo pipefail
+          gpg --export > ~/.gnupg/pubring.gpg
+          gpg --export-secret-keys > ~/.gnupg/secring.gpg
+
+      - name: Package and sign chart
+        shell: bash
+        env:
+          HELM_GPG_PASSPHRASE: ${{ secrets.HELM_GPG_PASSPHRASE }}
+          HELM_GPG_KEY_UID: ${{ secrets.HELM_GPG_KEY_UID }}
+        run: |
+          set -euo pipefail
+          mkdir -p .cr-release-packages
+          printf '%s' "$HELM_GPG_PASSPHRASE" > /tmp/helm-passphrase
+          chmod 600 /tmp/helm-passphrase
+          helm dependency update charts/searxng
+          helm package charts/searxng \
+            --sign \
+            --key "$HELM_GPG_KEY_UID" \
+            --keyring ~/.gnupg/secring.gpg \
+            --passphrase-file /tmp/helm-passphrase \
+            --destination .cr-release-packages
+
+      - name: Verify signed chart locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          helm verify .cr-release-packages/searxng-*.tgz
+
+      - name: Publish chart repo
+        uses: helm/chart-releaser-action@v1.7.0
+        with:
+          skip_packaging: true
+          packages_with_index: true
+        env:
+          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
