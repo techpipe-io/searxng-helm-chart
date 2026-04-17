@@ -1,0 +1,95 @@
+{{- if .Values.valkey.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "searxng.valkey.fullname" . }}
+  labels:
+    {{- include "searxng.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "searxng.valkey.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "searxng.valkey.fullname" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- with .Values.valkey.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        checksum/valkey-auth: {{ include (print $.Template.BasePath "/secret-valkey-auth.yaml") . | sha256sum }}
+        {{- with .Values.valkey.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: valkey
+          image: {{ .Values.valkey.image.repository }}:{{ .Values.valkey.image.tag }}
+          imagePullPolicy: {{ .Values.valkey.image.pullPolicy }}
+          {{- if .Values.valkey.auth.enabled }}
+          command:
+            - sh
+            - -ec
+            - exec valkey-server --save 30 1 --loglevel warning --requirepass "$VALKEY_PASSWORD"
+          env:
+            - name: VALKEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "searxng.valkey.authSecretName" . }}
+                  key: password
+          {{- else }}
+          command:
+            {{- toYaml .Values.valkey.command | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: valkey
+              containerPort: {{ .Values.valkey.service.port }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: valkey
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: valkey
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.valkey.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          {{- if .Values.valkey.persistence.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.valkey.persistence.existingClaim }}
+          {{- else if .Values.valkey.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "searxng.valkey.fullname" . }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- with .Values.valkey.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.valkey.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.valkey.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

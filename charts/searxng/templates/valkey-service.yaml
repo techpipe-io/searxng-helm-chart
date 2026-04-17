@@ -1,0 +1,22 @@
+{{- if .Values.valkey.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "searxng.valkey.fullname" . }}
+  labels:
+    {{- include "searxng.labels" . | nindent 4 }}
+  {{- with .Values.valkey.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: valkey
+      port: {{ .Values.valkey.service.port }}
+      targetPort: valkey
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ include "searxng.valkey.fullname" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

@@ -1,0 +1,40 @@
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: search.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: search-example-com-tls
+      hosts:
+        - search.example.com
+config:
+  settings:
+    general:
+      instance_name: Private Search
+    server:
+      base_url: https://search.example.com/
+      limiter: false
+      public_instance: false
+      image_proxy: true
+      method: GET
+    engines:
+      - name: wikidata
+        disabled: true
+      - name: ahmia
+        disabled: true
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    memory: 1Gi
+persistence:
+  cache:
+    size: 5Gi
+valkey:
+  enabled: true

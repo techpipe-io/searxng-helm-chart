@@ -1,0 +1,11 @@
+{{- if .Values.ingress.enabled }}
+{{- range .Values.ingress.hosts }}
+SearXNG should be available at http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}/
+{{- end }}
+{{- else if .Values.gateway.enabled }}
+SearXNG HTTPRoute has been created for hostnames: {{ join ", " .Values.gateway.hostnames }}
+{{- else }}
+SearXNG service name: {{ include "searxng.fullname" . }}
+Namespace: {{ .Release.Namespace }}
+Port: {{ .Values.service.port }}
+{{- end }}

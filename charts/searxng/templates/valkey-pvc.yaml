@@ -1,0 +1,21 @@
+{{- if and .Values.valkey.enabled .Values.valkey.persistence.enabled (not .Values.valkey.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "searxng.valkey.fullname" . }}
+  labels:
+    {{- include "searxng.labels" . | nindent 4 }}
+  {{- with .Values.valkey.persistence.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.valkey.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.valkey.persistence.size }}
+  {{- if .Values.valkey.persistence.storageClass }}
+  storageClassName: {{ .Values.valkey.persistence.storageClass }}
+  {{- end }}
+{{- end }}

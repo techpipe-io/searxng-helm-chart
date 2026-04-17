@@ -1,0 +1,179 @@
+nameOverride: ""
+fullnameOverride: ""
+commonLabels: {}
+image:
+  repository: searxng/searxng
+  tag: 2026.4.17-8579974f5
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+replicaCount: 1
+revisionHistoryLimit: 3
+deploymentAnnotations: {}
+podAnnotations: {}
+podLabels: {}
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+service:
+  type: ClusterIP
+  port: 8080
+  annotations: {}
+  ipFamilies: []
+  ipFamilyPolicy: ""
+  sessionAffinity: None
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: searxng.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+gateway:
+  enabled: false
+  labels: {}
+  annotations: {}
+  parentRefs: []
+  hostnames: []
+  matches:
+    - path:
+        type: PathPrefix
+        value: /
+  filters: []
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    memory: 1Gi
+nodeSelector: {}
+tolerations: []
+affinity: {}
+topologySpreadConstraints: []
+priorityClassName: ""
+terminationGracePeriodSeconds: 30
+hostAliases: []
+env:
+  forceOwnership: true
+  values: {}
+  secretValues: {}
+  existingSecrets: []
+  existingConfigMaps: []
+secret:
+  create: true
+  existingSecret: ""
+  existingSecretKey: SEARXNG_SECRET
+  value: ""
+config:
+  useDefaultSettings: true
+  settings:
+    general:
+      debug: false
+      instance_name: SearXNG
+      enable_metrics: true
+      open_metrics: ""
+    server:
+      base_url: false
+      limiter: false
+      public_instance: false
+      image_proxy: true
+      method: GET
+  files: {}
+  secretFiles: {}
+persistence:
+  config:
+    enabled: false
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    storageClass: ""
+    annotations: {}
+  cache:
+    enabled: true
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 2Gi
+    storageClass: ""
+    annotations: {}
+valkey:
+  enabled: true
+  externalUrl: ""
+  externalUrlSecret:
+    name: ""
+    key: SEARXNG_VALKEY_URL
+  image:
+    repository: docker.io/valkey/valkey
+    tag: 9-alpine
+    pullPolicy: IfNotPresent
+  command:
+    - valkey-server
+    - --save
+    - "30"
+    - "1"
+    - --loglevel
+    - warning
+  service:
+    port: 6379
+    annotations: {}
+  persistence:
+    enabled: true
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    storageClass: ""
+    annotations: {}
+  auth:
+    enabled: false
+    password: ""
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+  podAnnotations: {}
+  podLabels: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+probes:
+  startup:
+    enabled: true
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    failureThreshold: 30
+    timeoutSeconds: 1
+  readiness:
+    enabled: true
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    timeoutSeconds: 1
+  liveness:
+    enabled: true
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    failureThreshold: 6
+    timeoutSeconds: 1
+extraVolumes: []
+extraVolumeMounts: []
+caCertificates:
+  existingConfigMap: ""
+  existingSecret: ""
+  files: {}
+  mountPath: /usr/local/share/ca-certificates/chart-extra
+testConnection:
+  enabled: true
+  image:
+    repository: busybox
+    tag: "1.36"
+    pullPolicy: IfNotPresent

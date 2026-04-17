@@ -1,0 +1,210 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "searxng.fullname" . }}
+  labels:
+    {{- include "searxng.labels" . | nindent 4 }}
+  {{- with .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      {{- include "searxng.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "searxng.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-config.yaml") . | sha256sum }}
+        checksum/runtime-secret: {{ include (print $.Template.BasePath "/secret-runtime.yaml") . | sha256sum }}
+        checksum/config-secret: {{ include (print $.Template.BasePath "/secret-config.yaml") . | sha256sum }}
+        checksum/ca-config: {{ include (print $.Template.BasePath "/configmap-ca.yaml") . | sha256sum }}
+        checksum/valkey-auth: {{ include (print $.Template.BasePath "/secret-valkey-auth.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      enableServiceLinks: false
+      serviceAccountName: {{ include "searxng.serviceAccountName" . }}
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- with .Values.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: init-config
+          image: {{ .Values.testConnection.image.repository }}:{{ .Values.testConnection.image.tag }}
+          imagePullPolicy: {{ .Values.testConnection.image.pullPolicy }}
+          command:
+            - sh
+            - -ec
+            - |
+              mkdir -p /config-dst
+              if [ -d /config-src ]; then cp -R /config-src/. /config-dst/ || true; fi
+              if [ -d /config-secret-src ]; then cp -R /config-secret-src/. /config-dst/ || true; fi
+          volumeMounts:
+            - name: config-runtime
+              mountPath: /config-dst
+            - name: config-src
+              mountPath: /config-src
+            {{- if gt (len .Values.config.secretFiles) 0 }}
+            - name: config-secret-src
+              mountPath: /config-secret-src
+            {{- end }}
+      containers:
+        - name: searxng
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          {{- if or (eq (include "searxng.createRuntimeEnvSecret" .) "true") (gt (len .Values.env.existingSecrets) 0) (gt (len .Values.env.existingConfigMaps) 0) }}
+          envFrom:
+            {{- if eq (include "searxng.createRuntimeEnvSecret" .) "true" }}
+            - secretRef:
+                name: {{ include "searxng.runtimeEnvSecretName" . }}
+            {{- end }}
+            {{- range .Values.env.existingSecrets }}
+            - secretRef:
+                name: {{ . }}
+            {{- end }}
+            {{- range .Values.env.existingConfigMaps }}
+            - configMapRef:
+                name: {{ . }}
+            {{- end }}
+          {{- end }}
+          env:
+            {{- if and .Values.secret.existingSecret (not (hasKey .Values.env.values "SEARXNG_SECRET")) (not (hasKey .Values.env.secretValues "SEARXNG_SECRET")) }}
+            - name: SEARXNG_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.existingSecret }}
+                  key: {{ .Values.secret.existingSecretKey }}
+            {{- end }}
+            {{- if and .Values.valkey.externalUrlSecret.name (not (hasKey .Values.env.values "SEARXNG_VALKEY_URL")) (not (hasKey .Values.env.secretValues "SEARXNG_VALKEY_URL")) }}
+            - name: SEARXNG_VALKEY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.valkey.externalUrlSecret.name }}
+                  key: {{ .Values.valkey.externalUrlSecret.key }}
+            {{- end }}
+            - name: FORCE_OWNERSHIP
+              value: {{ ternary "true" "false" .Values.env.forceOwnership | quote }}
+            {{- range $k, $v := .Values.env.values }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          {{- if .Values.probes.startup.enabled }}
+          startupProbe:
+            {{- omit .Values.probes.startup "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.probes.readiness.enabled }}
+          readinessProbe:
+            {{- omit .Values.probes.readiness "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.probes.liveness.enabled }}
+          livenessProbe:
+            {{- omit .Values.probes.liveness "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config-runtime
+              mountPath: /etc/searxng
+            - name: cache
+              mountPath: /var/cache/searxng
+            {{- if .Values.caCertificates.existingConfigMap }}
+            - name: ca-certificates
+              mountPath: {{ .Values.caCertificates.mountPath }}
+              readOnly: true
+            {{- else if .Values.caCertificates.existingSecret }}
+            - name: ca-certificates
+              mountPath: {{ .Values.caCertificates.mountPath }}
+              readOnly: true
+            {{- else if gt (len .Values.caCertificates.files) 0 }}
+            - name: ca-certificates
+              mountPath: {{ .Values.caCertificates.mountPath }}
+              readOnly: true
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config-src
+          configMap:
+            name: {{ include "searxng.configConfigMapName" . }}
+            optional: true
+        {{- if gt (len .Values.config.secretFiles) 0 }}
+        - name: config-secret-src
+          secret:
+            secretName: {{ include "searxng.configSecretName" . }}
+        {{- end }}
+        - name: config-runtime
+          {{- if .Values.persistence.config.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.config.existingClaim }}
+          {{- else if .Values.persistence.config.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "searxng.fullname" . }}-config
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: cache
+          {{- if .Values.persistence.cache.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.cache.existingClaim }}
+          {{- else if .Values.persistence.cache.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "searxng.fullname" . }}-cache
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- if .Values.caCertificates.existingConfigMap }}
+        - name: ca-certificates
+          configMap:
+            name: {{ .Values.caCertificates.existingConfigMap }}
+        {{- else if .Values.caCertificates.existingSecret }}
+        - name: ca-certificates
+          secret:
+            secretName: {{ .Values.caCertificates.existingSecret }}
+        {{- else if gt (len .Values.caCertificates.files) 0 }}
+        - name: ca-certificates
+          configMap:
+            name: {{ include "searxng.caConfigMapName" . }}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,31 @@
+{{- $rawSettings := index .Values.config.files "settings.yml" -}}
+{{- $secretSettings := index .Values.config.secretFiles "settings.yml" -}}
+{{- $hasData := or $rawSettings .Values.config.useDefaultSettings .Values.config.settings (gt (len .Values.config.files) 0) -}}
+{{- if $hasData }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "searxng.configConfigMapName" . }}
+  labels:
+    {{- include "searxng.labels" . | nindent 4 }}
+data:
+{{- if not $secretSettings }}
+  settings.yml: |
+{{- if $rawSettings }}
+{{ tpl $rawSettings . | nindent 4 }}
+{{- else }}
+{{- if .Values.config.useDefaultSettings }}
+    use_default_settings: true
+{{- end }}
+{{- with .Values.config.settings }}
+{{ toYaml . | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $name, $content := .Values.config.files }}
+{{- if ne $name "settings.yml" }}
+  {{ $name }}: |
+{{ tpl $content $ | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- end }}

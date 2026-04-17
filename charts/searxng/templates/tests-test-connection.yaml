@@ -1,0 +1,21 @@
+{{- if .Values.testConnection.enabled }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "searxng.fullname" . }}-test
+  labels:
+    {{- include "searxng.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: wget
+      image: {{ .Values.testConnection.image.repository }}:{{ .Values.testConnection.image.tag }}
+      imagePullPolicy: {{ .Values.testConnection.image.pullPolicy }}
+      command:
+        - sh
+        - -ec
+        - wget -qO- http://{{ include "searxng.fullname" . }}:{{ .Values.service.port }}/ >/dev/null
+{{- end }}
