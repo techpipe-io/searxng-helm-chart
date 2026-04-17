@@ -111,7 +111,7 @@ valkey:
     key: SEARXNG_VALKEY_URL
   image:
     repository: docker.io/valkey/valkey
-    tag: 9-alpine
+    tag: 9.0.3-trixie
     pullPolicy: IfNotPresent
   command:
     - valkey-server
