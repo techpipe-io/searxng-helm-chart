@@ -22,6 +22,47 @@ entries:
           url: https://github.com/searxng/searxng/issues
     apiVersion: v2
     appVersion: latest
+    created: "2026-04-17T21:42:24.432608401Z"
+    description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway
+      API HTTPRoute support
+    digest: 13d78c294be14fecf3f1dc693a540a5cc844db415144b061347466651062e88a
+    home: https://docs.searxng.org/
+    keywords:
+    - searxng
+    - search
+    - metasearch
+    - privacy
+    - valkey
+    kubeVersion: '>=1.27.0-0'
+    name: searxng
+    sources:
+    - https://github.com/searxng/searxng
+    - https://docs.searxng.org/
+    type: application
+    urls:
+    - https://github.com/techpipe-io/searxng-helm-chart/releases/download/searxng-0.1.3/searxng-0.1.3.tgz
+    version: 0.1.3
+  - annotations:
+      artifacthub.io/alternativeName: searxng
+      artifacthub.io/category: networking
+      artifacthub.io/changes: |
+        - kind: added
+          description: Initial chart release with optional Valkey, Ingress, and Gateway API HTTPRoute support.
+      artifacthub.io/images: |
+        - name: searxng
+          image: docker.io/searxng/searxng:latest
+        - name: valkey
+          image: docker.io/valkey/valkey:9-alpine
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: source
+          url: https://github.com/searxng/searxng
+        - name: documentation
+          url: https://docs.searxng.org/
+        - name: support
+          url: https://github.com/searxng/searxng/issues
+    apiVersion: v2
+    appVersion: latest
     created: "2026-04-17T21:17:25.021755274Z"
     description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway
       API HTTPRoute support
@@ -83,4 +124,4 @@ entries:
     urls:
     - https://github.com/techpipe-io/searxng-helm-chart/releases/download/searxng-0.1.1/searxng-0.1.1.tgz
     version: 0.1.1
-generated: "2026-04-17T21:17:25.021769341Z"
+generated: "2026-04-17T21:42:24.432620975Z"
