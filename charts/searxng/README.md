@@ -82,7 +82,7 @@ helmwave up
 
 ## Typical override file
 
-A ready example is included at `examples/values.override.yaml`.
+A ready example is included at [examples/values.override.yaml](examples/values.override.yaml).
 
 ## Main values
 
