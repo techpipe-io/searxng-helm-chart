@@ -79,10 +79,26 @@ jobs:
 
       - name: Export Helm keyrings
         shell: bash
+        env:
+          HELM_GPG_PASSPHRASE: ${{ secrets.HELM_GPG_PASSPHRASE }}
+          HELM_GPG_KEY_UID: ${{ secrets.HELM_GPG_KEY_UID }}
         run: |
           set -euo pipefail
-          gpg --export > ~/.gnupg/pubring.gpg
-          gpg --export-secret-keys > ~/.gnupg/secring.gpg
+          test -n "${HELM_GPG_PASSPHRASE:-}" || { echo "HELM_GPG_PASSPHRASE is empty"; exit 1; }
+          test -n "${HELM_GPG_KEY_UID:-}" || { echo "HELM_GPG_KEY_UID is empty"; exit 1; }
+      
+          printf '%s' "$HELM_GPG_PASSPHRASE" > /tmp/helm-passphrase
+          chmod 600 /tmp/helm-passphrase
+      
+          gpg --batch --yes \
+            --output ~/.gnupg/pubring.gpg \
+            --export "$HELM_GPG_KEY_UID"
+      
+          gpg --batch --yes \
+            --pinentry-mode loopback \
+            --passphrase-file /tmp/helm-passphrase \
+            --output ~/.gnupg/secring.gpg \
+            --export-secret-keys "$HELM_GPG_KEY_UID"
 
       - name: Package and sign chart
         shell: bash
