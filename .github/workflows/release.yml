@@ -125,10 +125,27 @@ jobs:
           helm verify .cr-release-packages/searxng-*.tgz
 
       - name: Publish chart repo
-        uses: helm/chart-releaser-action@v1.7.0
-        with:
-          skip_packaging: true
-          packages_with_index: true
+        shell: bash
         env:
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          set -euo pipefail
+
+          CR_VERSION="v1.7.0"
+          ARCH="linux_amd64"
+
+          curl -sSLo /tmp/cr.tar.gz \
+            "https://github.com/helm/chart-releaser/releases/download/${CR_VERSION}/chart-releaser_${CR_VERSION#v}_${ARCH}.tar.gz"
+          tar -xzf /tmp/cr.tar.gz -C /tmp
+          install /tmp/cr /usr/local/bin/cr
+
+          cr upload \
+            -o "$OWNER" \
+            -r "$REPO" \
+            -c "${GITHUB_SHA}" \
+            --skip-existing \
+            .cr-release-packages/*.tgz \
+            .cr-release-packages/*.tgz.prov
 
