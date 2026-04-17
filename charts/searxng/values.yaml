@@ -76,11 +76,16 @@ config:
       enable_metrics: true
       open_metrics: ""
     server:
-      base_url: false
+      base_url: http://searxng.local/
       limiter: false
       public_instance: false
       image_proxy: true
       method: GET
+    engines:
+      - name: wikidata
+        disabled: true
+      - name: ahmia
+        disabled: true      
   files: {}
   secretFiles: {}
 persistence:
