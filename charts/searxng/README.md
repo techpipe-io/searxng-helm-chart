@@ -26,7 +26,7 @@ The defaults are aimed at a single private instance behind a reverse proxy:
 - `server.image_proxy=true`
 - Ingress and Gateway API disabled by default
 
-## Install with Helm 3
+## Install with Helm
 
 Add the repository after GitHub Pages is enabled and the first release has been published:
 
