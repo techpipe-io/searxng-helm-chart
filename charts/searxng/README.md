@@ -108,6 +108,8 @@ config:
 
 Extra non-secret config files go into `config.files`.
 
+### Limiter config and extra settings 
+
 Extra secret config files go into `config.secretFiles`.
 
 Examples:

@@ -2,8 +2,8 @@ apiVersion: v2
 name: searxng
 description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway API HTTPRoute support
 type: application
-version: 0.1.5
-appVersion: "latest"
+version: 0.1.6
+appVersion: "2026.4.24-a7ac696b4"
 kubeVersion: ">=1.27.0-0"
 home: https://docs.searxng.org/
 sources:

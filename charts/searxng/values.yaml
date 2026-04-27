@@ -3,7 +3,7 @@ fullnameOverride: ""
 commonLabels: {}
 image:
   repository: searxng/searxng
-  tag: 2026.4.17-e8299a4c3
+  tag: 2026.4.24-a7ac696b4
   pullPolicy: IfNotPresent
   pullSecrets: []
 replicaCount: 1
@@ -111,7 +111,7 @@ valkey:
     key: SEARXNG_VALKEY_URL
   image:
     repository: docker.io/valkey/valkey
-    tag: 9.0.3-trixie
+    tag: 9.1-trixie
     pullPolicy: IfNotPresent
   command:
     - valkey-server
