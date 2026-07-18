@@ -3,7 +3,7 @@ fullnameOverride: ""
 commonLabels: {}
 image:
   repository: searxng/searxng
-  tag: 2026.4.24-a7ac696b4
+  tag: 2026.7.18-277d8469c
   pullPolicy: IfNotPresent
   pullSecrets: []
 replicaCount: 1
