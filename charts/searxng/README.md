@@ -1,6 +1,6 @@
 # searxng Helm chart
 
-This chart deploys SearXNG on Kubernetes and follows the current upstream container layout: a writable `/etc/searxng`, a persistent `/var/cache/searxng`, and an optional built-in Valkey service for limiter and public-instance features.
+This chart deploys SearXNG on Kubernetes and follows the current upstream container layout: a writable `/etc/searxng`, a persistent `/var/cache/searxng`, and an optional built-in Valkey service for limiter and public-instance features. Builds are verified with smoke test helm install (see [details](https://github.com/techpipe-io/searxng-helm-chart/actions/workflows/release.yml)).
 
 ## Included features
 
