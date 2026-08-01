@@ -6,6 +6,51 @@ entries:
       artifacthub.io/category: networking
       artifacthub.io/changes: |
         - kind: added
+          description: up searxng version to 2026.8.1-8892414dc and valkey version to 9.1.1-trixie
+      artifacthub.io/images: |
+        - name: searxng
+          image: docker.io/searxng/searxng:2026.8.1-8892414dc
+        - name: valkey
+          image: docker.io/valkey/valkey:9.1.1-trixie
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: app source
+          url: https://github.com/searxng/searxng
+        - name: chart source
+          url: https://github.com/techpipe-io/searxng-helm-chart
+        - name: documentation
+          url: https://docs.searxng.org/
+        - name: support
+          url: https://github.com/techpipe-io/searxng-helm-chart/issues
+    apiVersion: v2
+    appVersion: 2026.8.1-8892414dc
+    created: "2026-08-01T15:24:46.406834701Z"
+    description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway
+      API HTTPRoute support
+    digest: 77c3a2827b068d512eb11c9605bab8479186f18bcf0a91a24257dda26ce58252
+    home: https://docs.searxng.org/
+    icon: https://docs.searxng.org/_static/searxng-wordmark.svg
+    keywords:
+    - searxng
+    - search
+    - search-engine
+    - metasearch
+    - privacy
+    - valkey
+    kubeVersion: '>=1.27.0-0'
+    name: searxng
+    sources:
+    - https://github.com/searxng/searxng
+    - https://github.com/techpipe-io/searxng-helm-chart
+    type: application
+    urls:
+    - https://techpipe-io.github.io/searxng-helm-chart/searxng-0.1.9.tgz
+    version: 0.1.9
+  - annotations:
+      artifacthub.io/alternativeName: searxng
+      artifacthub.io/category: networking
+      artifacthub.io/changes: |
+        - kind: added
           description: up searxng version to 2026.7.18-277d8469c and valkey version to 9.1.0-trixie
       artifacthub.io/images: |
         - name: searxng
@@ -24,7 +69,7 @@ entries:
           url: https://github.com/techpipe-io/searxng-helm-chart/issues
     apiVersion: v2
     appVersion: 2026.7.18-277d8469c
-    created: "2026-07-19T05:05:10.384017513Z"
+    created: "2026-08-01T15:24:46.40444375Z"
     description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway
       API HTTPRoute support
     digest: 5d56e68a60b314249176b15a66c7156a7f439a42ea3f3c27befd228d3f148bcf
@@ -72,7 +117,7 @@ entries:
         url: https://techpipe.io/keys/helm-signing-public.asc
     apiVersion: v2
     appVersion: 2026.7.18-277d8469c
-    created: "2026-07-19T05:05:10.383085347Z"
+    created: "2026-08-01T15:24:46.403519746Z"
     description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway
       API HTTPRoute support
     digest: edad59e728181600096e84f15985c40a0e8753ae3b3b0fb5a2d783274c50d76c
@@ -117,7 +162,7 @@ entries:
         url: https://techpipe.io/keys/helm-signing-public.asc
     apiVersion: v2
     appVersion: 2026.4.24-a7ac696b4
-    created: "2026-07-19T05:05:10.382143462Z"
+    created: "2026-08-01T15:24:46.402556038Z"
     description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway
       API HTTPRoute support
     digest: efc76365a1ac861703a549f51c0f444294f05e37422c2fb7e34f48cd372b7867
@@ -161,7 +206,7 @@ entries:
         url: https://techpipe.io/keys/helm-signing-public.asc
     apiVersion: v2
     appVersion: latest
-    created: "2026-07-19T05:05:10.381148578Z"
+    created: "2026-08-01T15:24:46.401614522Z"
     description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway
       API HTTPRoute support
     digest: a9286555243ee807364700626608e9fc256caa10361224b0915ca9fe9cff735f
@@ -205,7 +250,7 @@ entries:
         url: https://techpipe.io/keys/helm-signing-public.asc
     apiVersion: v2
     appVersion: latest
-    created: "2026-07-19T05:05:10.379061494Z"
+    created: "2026-08-01T15:24:46.400587055Z"
     description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway
       API HTTPRoute support
     digest: dfa69801d7c70133e2ce473c4c4c6c20b7022de68ba4740ec3268cfa3d79e5d9
@@ -266,4 +311,4 @@ entries:
     urls:
     - https://github.com/techpipe-io/searxng-helm-chart/releases/download/searxng-0.1.3/searxng-0.1.3.tgz
     version: 0.1.3
-generated: "2026-07-19T05:05:10.377994244Z"
+generated: "2026-08-01T15:24:46.399421811Z"
