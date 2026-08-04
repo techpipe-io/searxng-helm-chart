@@ -2,8 +2,8 @@ apiVersion: v2
 name: searxng
 description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway API HTTPRoute support
 type: application
-version: 0.1.9
-appVersion: "2026.8.1-8892414dc"
+version: 0.1.10
+appVersion: "2026.8.3-aa059419f"
 kubeVersion: ">=1.27.0-0"
 home: https://docs.searxng.org/
 icon: https://docs.searxng.org/_static/searxng-wordmark.svg
@@ -26,7 +26,7 @@ annotations:
 #    url: https://techpipe.io/keys/helm-signing-public.asc
   artifacthub.io/images: |
     - name: searxng
-      image: docker.io/searxng/searxng:2026.8.1-8892414dc
+      image: docker.io/searxng/searxng:2026.8.3-aa059419f
     - name: valkey
       image: docker.io/valkey/valkey:9.1.1-trixie
   artifacthub.io/links: |
@@ -40,4 +40,4 @@ annotations:
       url: https://github.com/techpipe-io/searxng-helm-chart/issues
   artifacthub.io/changes: |
     - kind: added
-      description: up searxng version to 2026.8.1-8892414dc and valkey version to 9.1.1-trixie
+      description: up searxng version to 2026.8.3-aa059419f
