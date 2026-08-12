@@ -1,0 +1,56 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+annotations:
+  artifacthub.io/alternativeName: searxng
+  artifacthub.io/category: networking
+  artifacthub.io/changes: |
+    - kind: added
+      description: up searxng version to 2026.8.12-cdfdaa5a8
+  artifacthub.io/images: |
+    - name: searxng
+      image: docker.io/searxng/searxng:2026.8.12-cdfdaa5a8
+    - name: valkey
+      image: docker.io/valkey/valkey:9.1.1-trixie
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/links: |
+    - name: app source
+      url: https://github.com/searxng/searxng
+    - name: chart source
+      url: https://github.com/techpipe-io/searxng-helm-chart
+    - name: documentation
+      url: https://docs.searxng.org/
+    - name: support
+      url: https://github.com/techpipe-io/searxng-helm-chart/issues
+apiVersion: v2
+appVersion: 2026.8.12-cdfdaa5a8
+description: SearXNG Helm chart with optional built-in Valkey, Ingress, and Gateway
+  API HTTPRoute support
+home: https://docs.searxng.org/
+icon: https://docs.searxng.org/_static/searxng-wordmark.svg
+keywords:
+- - searxng
+- - search
+- - search-engine
+- - metasearch
+- - privacy
+- - valkey
+kubeVersion: '>=1.27.0-0'
+name: searxng
+sources:
+- - https://github.com/searxng/searxng
+- - https://github.com/techpipe-io/searxng-helm-chart
+type: application
+version: 0.1.11
+
+...
+files:
+  searxng-0.1.11.tgz: sha256:32d28a21f70760d9d516b0a7571236cad3ff369d2779a466fd563b93e5101dc7
+
+-----BEGIN PGP SIGNATURE-----
+
+wrsEARYKAG0Fgmp82OwJEBcbE75G7/Z4RRQAAAAAABwAIHNhbHRAbm90YXRpb25z
+Lm9wZW5wZ3Bqcy5vcmf2q0aLgk0baAlonozr4HzSWIJYBys4IR2VdQh5SxELoRYh
+BHZRcXMlrTt8RU86zBcbE75G7/Z4AADvPAD/VGJCK85ZxOI7PfLBPeTaRSCaIuKM
+VctmWHkv6EF2NUABAPP4e6v3DtZ5O6vVIJMXy6d7WVsCzHLsGbvz+R+1ccIP
+-----END PGP SIGNATURE-----
